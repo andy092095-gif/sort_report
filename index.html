@@ -1,1 +1,224 @@
 
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>氣泡排序法 (Bubble Sort) 動畫教學</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .concept-box {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        /* 視覺化圖表樣式 */
+        .visualization {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .bar-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            height: 250px;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ddd;
+        }
+        .bar {
+            width: 50px;
+            background-color: #3498db;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 5px 5px 0 0;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding-bottom: 10px;
+        }
+        /* 狀態顏色 */
+        .comparing { background-color: #f1c40f; } /* 黃色：正在比較 */
+        .swapping { background-color: #e74c3c; } /* 紅色：需要交換 */
+        .sorted { background-color: #2ecc71; }   /* 綠色：已完成排序 */
+        
+        button {
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover { background-color: #1a5276; }
+        button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+        
+        pre {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        #status {
+            font-weight: bold;
+            color: #e74c3c;
+            min-height: 24px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🫧 氣泡排序法 (Bubble Sort)</h1>
+    
+    <div class="concept-box">
+        <h2>什麼是氣泡排序法？</h2>
+        <p>氣泡排序法是一種簡單的排序演算法。它會重複地走訪要排序的數列，一次比較兩個相鄰的元素。如果它們的順序錯誤（例如：前面的數字大於後面的數字），就把它們交換過來。</p>
+        <p>這個過程會不斷重複，直到沒有任何一對數字需要交換為止。因為越大的元素會經由交換慢慢「浮」到數列的頂端（最後面），所以被稱為「氣泡」排序。</p>
+    </div>
+
+    <div class="visualization">
+        <h2>動態展示</h2>
+        <p>點擊下方按鈕觀察數字是如何兩兩比較並交換的！</p>
+        <div id="status">準備就緒</div>
+        <div class="bar-container" id="bar-container">
+            </div>
+        <button id="start-btn" onclick="startSort()">開始排序動畫</button>
+        <button id="reset-btn" onclick="resetArray()">重置陣列</button>
+    </div>
+
+    <div class="concept-box">
+        <h2>JavaScript 程式碼範例</h2>
+        <pre><code>function bubbleSort(arr) {
+    let n = arr.length;
+    // 外層迴圈控制回合數
+    for (let i = 0; i < n - 1; i++) {
+        let swapped = false;
+        // 內層迴圈進行相鄰元素比較
+        for (let j = 0; j < n - 1 - i; j++) {
+            if (arr[j] > arr[j + 1]) {
+                // 交換元素
+                let temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+                swapped = true;
+            }
+        }
+        // 如果這一回合完全沒有發生交換，代表已經排序完成，可提早結束
+        if (!swapped) break;
+    }
+    return arr;
+}</code></pre>
+    </div>
+
+    <script>
+        let array = [65, 22, 88, 14, 45, 9, 53];
+        const container = document.getElementById('bar-container');
+        const statusText = document.getElementById('status');
+        const startBtn = document.getElementById('start-btn');
+        const resetBtn = document.getElementById('reset-btn');
+
+        // 延遲函數，用來製作動畫效果
+        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        // 渲染初始陣列
+        function renderArray() {
+            container.innerHTML = '';
+            array.forEach(value => {
+                const bar = document.createElement('div');
+                bar.classList.add('bar');
+                bar.style.height = `${value * 2.5}px`; // 放大高度讓視覺更明顯
+                bar.innerText = value;
+                container.appendChild(bar);
+            });
+        }
+
+        // 重置陣列
+        function resetArray() {
+            array = [65, 22, 88, 14, 45, 9, 53]; // 可以改成隨機生成
+            renderArray();
+            statusText.innerText = "準備就緒";
+            statusText.style.color = "#333";
+            startBtn.disabled = false;
+        }
+
+        // 氣泡排序動畫邏輯
+        async function startSort() {
+            startBtn.disabled = true;
+            resetBtn.disabled = true;
+            let bars = document.getElementsByClassName('bar');
+            let n = array.length;
+
+            for (let i = 0; i < n - 1; i++) {
+                let swapped = false;
+                for (let j = 0; j < n - i - 1; j++) {
+                    // 標記正在比較的兩個元素
+                    bars[j].classList.add('comparing');
+                    bars[j+1].classList.add('comparing');
+                    statusText.innerText = `正在比較：${array[j]} 和 ${array[j+1]}`;
+                    
+                    await sleep(600); // 暫停一下讓使用者看清楚
+
+                    if (array[j] > array[j + 1]) {
+                        // 標記需要交換
+                        bars[j].classList.replace('comparing', 'swapping');
+                        bars[j+1].classList.replace('comparing', 'swapping');
+                        statusText.innerText = `${array[j]} > ${array[j+1]}，需要交換！`;
+                        
+                        await sleep(600);
+
+                        // 實際交換陣列數值
+                        let temp = array[j];
+                        array[j] = array[j + 1];
+                        array[j + 1] = temp;
+
+                        // 更新畫面上的高度與文字
+                        bars[j].style.height = `${array[j] * 2.5}px`;
+                        bars[j].innerText = array[j];
+                        bars[j+1].style.height = `${array[j+1] * 2.5}px`;
+                        bars[j+1].innerText = array[j+1];
+                    }
+
+                    // 恢復原來顏色
+                    bars[j].classList.remove('comparing', 'swapping');
+                    bars[j+1].classList.remove('comparing', 'swapping');
+                }
+                // 每一回合結束，最後一個元素已經在正確位置
+                bars[n - 1 - i].classList.add('sorted');
+            }
+            // 將第一個元素也標記為已排序
+            bars[0].classList.add('sorted');
+            
+            statusText.innerText = "🎉 排序完成！";
+            statusText.style.color = "#2ecc71";
+            resetBtn.disabled = false;
+        }
+
+        // 網頁載入時先渲染一次
+        window.onload = renderArray;
+    </script>
+</body>
+</html>
+

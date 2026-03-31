@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>氣泡排序法 (Bubble Sort) 教學面板</title>
+    <title>排序演算法教學面板</title>
     <style>
         :root {
             --primary-color: #3498db;
@@ -36,6 +36,60 @@
             margin-bottom: 30px;
             border-bottom: 3px solid var(--primary-color);
             padding-bottom: 10px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 600px) {
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .menu-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+
+        .menu-card h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            font-size: 24px;
+        }
+
+        .menu-card p {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin: 15px 0;
+        }
+
+        .menu-link {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .menu-link:hover {
+            background-color: #2980b9;
         }
 
         .panel {
@@ -134,150 +188,37 @@
 <body>
 
     <div class="container">
-        <h1>氣泡排序法 (Bubble Sort) 教學</h1>
+        <h1>🎓 排序演算法教學面板</h1>
 
-        <div class="panel">
-            <h2>📝 簡述原理</h2>
-            <p>氣泡排序法是一種簡單的排序演算法。它會重複地走訪要排序的數列，一次比較兩個相鄰的元素。如果它們的順序錯誤（例如：前面的大於後面的），就把牠們交換過來。</p>
-            <p>這個過程會重複進行，直到沒有再需要交換的元素為止。因為越大的元素會經由交換，慢慢「浮」到數列的頂端（最後面），就像水中的氣泡浮到水面一樣，故得名「氣泡排序」。</p>
-        </div>
+        <div class="menu-grid">
+            <div class="menu-card">
+                <h2>氣泡排序法</h2>
+                <p>📝 Bubble Sort</p>
+                <p>通過重複比較相鄰元素進行排序</p>
+                <a href="bubble_sort.html" class="menu-link">進入教學 →</a>
+            </div>
 
-        <div class="panel">
-            <h2>📊 複雜度分析</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>情境</th>
-                        <th>時間複雜度 (Time Complexity)</th>
-                        <th>空間複雜度 (Space Complexity)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>最佳情況 (Best Case)</strong></td>
-                        <td>O(n) - <em>數列已排序，加上提早結束標記(Flag)</em></td>
-                        <td rowspan="3" style="vertical-align: middle;">O(1) - <em>只需要一個常數空間來做交換</em></td>
-                    </tr>
-                    <tr>
-                        <td><strong>平均情況 (Average Case)</strong></td>
-                        <td>O(n²)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>最壞情況 (Worst Case)</strong></td>
-                        <td>O(n²) - <em>數列剛好是反向排序</em></td>
-                    </tr>
-                </tbody>
-            </table>
-            <p style="font-size: 0.9em; color: #7f8c8d; margin-top: 10px;">* 穩定性 (Stability)：<strong>穩定 (Stable)</strong>，因為值相同的元素不會交換位置。</p>
-        </div>
+            <div class="menu-card">
+                <h2>選擇排序法</h2>
+                <p>📝 Selection Sort</p>
+                <p>每次尋找最小元素進行排序</p>
+                <a href="selection_sort.html" class="menu-link">進入教學 →</a>
+            </div>
 
-        <div class="panel">
-            <h2>🎮 模擬實作</h2>
-            <p>點擊「開始排序」觀察氣泡排序的過程。<span style="color: #e74c3c;">紅色</span>代表正在比較，<span style="color: #2ecc71;">綠色</span>代表已經排序完成。</p>
-            
-            <div id="visualization"></div>
+            <div class="menu-card">
+                <h2>插入排序法</h2>
+                <p>📝 Insertion Sort</p>
+                <p>逐次將元素插入已排序的部分</p>
+                <a href="insertion_sort.html" class="menu-link">進入教學 →</a>
+            </div>
 
-            <div class="controls">
-                <button id="start-btn">開始排序</button>
-                <button id="reset-btn">產生新陣列</button>
+            <div class="menu-card">
+                <h2>合併排序法</h2>
+                <p>📝 Merge Sort</p>
+                <p>分治法將陣列分割後進行排序</p>
+                <a href="merge_sort.html" class="menu-link">進入教學 →</a>
             </div>
         </div>
     </div>
-
-    <script>
-        const visualization = document.getElementById('visualization');
-        const startBtn = document.getElementById('start-btn');
-        const resetBtn = document.getElementById('reset-btn');
-        
-        let array = [];
-        const arraySize = 15;
-
-        // 產生隨機陣列
-        function generateArray() {
-            array = [];
-            visualization.innerHTML = '';
-            for (let i = 0; i < arraySize; i++) {
-                // 產生 20 到 250 之間的隨機數作為高度
-                const value = Math.floor(Math.random() * 230) + 20;
-                array.push(value);
-                
-                const bar = document.createElement('div');
-                bar.classList.add('bar');
-                bar.style.height = `${value}px`;
-                bar.innerText = value;
-                visualization.appendChild(bar);
-            }
-        }
-
-        // 延遲函數以產生動畫效果
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-
-        // 氣泡排序主程式
-        async function bubbleSort() {
-            const bars = document.querySelectorAll('.bar');
-            const n = array.length;
-            
-            // 禁用按鈕防止重複執行
-            startBtn.disabled = true;
-            resetBtn.disabled = true;
-
-            for (let i = 0; i < n - 1; i++) {
-                let swapped = false;
-                for (let j = 0; j < n - i - 1; j++) {
-                    // 標記正在比較的兩個元素
-                    bars[j].style.backgroundColor = 'var(--highlight-color)';
-                    bars[j + 1].style.backgroundColor = 'var(--highlight-color)';
-                    
-                    await sleep(300); // 動畫速度
-
-                    if (array[j] > array[j + 1]) {
-                        // 交換陣列值
-                        let temp = array[j];
-                        array[j] = array[j + 1];
-                        array[j + 1] = temp;
-
-                        // 交換 DOM 高度與文字
-                        bars[j].style.height = `${array[j]}px`;
-                        bars[j].innerText = array[j];
-                        bars[j + 1].style.height = `${array[j + 1]}px`;
-                        bars[j + 1].innerText = array[j + 1];
-                        
-                        swapped = true;
-                    }
-
-                    // 恢復原顏色
-                    bars[j].style.backgroundColor = 'var(--primary-color)';
-                    bars[j + 1].style.backgroundColor = 'var(--primary-color)';
-                }
-                // 最後一個元素已到位，標記為綠色
-                bars[n - i - 1].style.backgroundColor = 'var(--success-color)';
-                
-                // 提早結束優化：如果一整輪都沒有交換，代表已排序完成
-                if (!swapped) {
-                    for (let k = 0; k < n - i - 1; k++) {
-                         bars[k].style.backgroundColor = 'var(--success-color)';
-                    }
-                    break;
-                }
-            }
-            // 確保第一個元素也標記為完成
-            bars[0].style.backgroundColor = 'var(--success-color)';
-
-            // 恢復重置按鈕
-            resetBtn.disabled = false;
-        }
-
-        // 事件監聽
-        startBtn.addEventListener('click', bubbleSort);
-        resetBtn.addEventListener('click', () => {
-            generateArray();
-            startBtn.disabled = false;
-        });
-
-        // 初始化
-        generateArray();
-    </script>
 </body>
 </html>

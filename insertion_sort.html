@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>插入排序法 (Insertion Sort) 教學面板</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --success-color: #2ecc71;
+            --highlight-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--secondary-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--secondary-color);
+            margin-bottom: 30px;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .panel {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* 模擬區塊樣式 */
+        #visualization {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            height: 300px;
+            margin: 20px 0;
+            padding: 20px 0;
+            border: 1px dashed #bdc3c7;
+            border-radius: 8px;
+            background-color: #fafafa;
+            gap: 4px;
+        }
+
+        .bar {
+            width: 30px;
+            background-color: var(--primary-color);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.2s ease, background-color 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            color: white;
+            font-size: 12px;
+            padding-bottom: 5px;
+            box-sizing: border-box;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            background-color: var(--primary-color);
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        #reset-btn {
+            background-color: #7f8c8d;
+        }
+
+        #reset-btn:hover {
+            background-color: #636e72;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div style="text-align: left; margin-bottom: 20px;">
+            <a href="index.html" style="color: var(--primary-color); text-decoration: none; font-weight: bold;">← 返回首頁</a>
+        </div>
+        <h1>插入排序法 (Insertion Sort) 教學</h1>
+
+        <div class="panel">
+            <h2>📝 簡述原理</h2>
+            <p>插入排序法是一種簡單直觀的排序演算法。它從第二個元素開始，逐個取出未排序部分的元素，並將其插入到已排序部分的適當位置中。</p>
+            <p>這個演算法就像整理撲克牌一樣：一開始只有一張牌，然後逐張取出新牌，並將其插入到已排序的牌組中的正確位置。這個過程會重複進行，直到所有元素都被處理為止。</p>
+        </div>
+
+        <div class="panel">
+            <h2>📊 複雜度分析</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>情境</th>
+                        <th>時間複雜度 (Time Complexity)</th>
+                        <th>空間複雜度 (Space Complexity)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>最佳情況 (Best Case)</strong></td>
+                        <td>O(n) - <em>數列已排序，每個元素只比較一次</em></td>
+                        <td rowspan="3" style="vertical-align: middle;">O(1) - <em>只需要常數額外空間</em></td>
+                    </tr>
+                    <tr>
+                        <td><strong>平均情況 (Average Case)</strong></td>
+                        <td>O(n²)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>最壞情況 (Worst Case)</strong></td>
+                        <td>O(n²) - <em>數列是反向排序</em></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="font-size: 0.9em; color: #7f8c8d; margin-top: 10px;">* 穩定性 (Stability)：<strong>穩定 (Stable)</strong>，因為只有在元素大小不同時才會移動。</p>
+        </div>
+
+        <div class="panel">
+            <h2>🎮 模擬實作</h2>
+            <p>點擊「開始排序」觀察插入排序的過程。<span style="color: #2ecc71;">綠色</span>代表已排序的部分，<span style="color: #e74c3c;">紅色</span>代表正在處理的元素。</p>
+            
+            <div id="visualization"></div>
+
+            <div class="controls">
+                <button id="start-btn">開始排序</button>
+                <button id="reset-btn">產生新陣列</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const visualization = document.getElementById('visualization');
+        const startBtn = document.getElementById('start-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        
+        let array = [];
+        const arraySize = 15;
+
+        // 產生隨機陣列
+        function generateArray() {
+            array = [];
+            visualization.innerHTML = '';
+            for (let i = 0; i < arraySize; i++) {
+                // 產生 20 到 250 之間的隨機數作為高度
+                const value = Math.floor(Math.random() * 230) + 20;
+                array.push(value);
+                
+                const bar = document.createElement('div');
+                bar.classList.add('bar');
+                bar.style.height = `${value}px`;
+                bar.innerText = value;
+                visualization.appendChild(bar);
+            }
+        }
+
+        // 延遲函數以產生動畫效果
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // 插入排序主程式
+        async function insertionSort() {
+            const bars = document.querySelectorAll('.bar');
+            const n = array.length;
+            
+            // 禁用按鈕防止重複執行
+            startBtn.disabled = true;
+            resetBtn.disabled = true;
+
+            // 第一個元素已排序，標記為綠色
+            bars[0].style.backgroundColor = 'var(--success-color)';
+
+            for (let i = 1; i < n; i++) {
+                // 當前要插入的元素
+                bars[i].style.backgroundColor = 'var(--highlight-color)';
+                const key = array[i];
+                let j = i - 1;
+
+                await sleep(300); // 動畫速度
+
+                // 比較並移動已排序部分的元素
+                while (j >= 0 && array[j] > key) {
+                    // 標記正在比較的元素
+                    bars[j].style.backgroundColor = '#f39c12'; // 橙色表示正在移動
+
+                    await sleep(200);
+
+                    // 向右移動元素
+                    array[j + 1] = array[j];
+                    bars[j + 1].style.height = `${array[j]}px`;
+                    bars[j + 1].innerText = array[j];
+
+                    // 恢復顏色
+                    bars[j].style.backgroundColor = 'var(--success-color)';
+                    bars[j + 1].style.backgroundColor = 'var(--highlight-color)';
+
+                    j--;
+
+                    await sleep(200);
+                }
+
+                // 插入鑰匙元素到正確位置
+                array[j + 1] = key;
+                bars[j + 1].style.height = `${key}px`;
+                bars[j + 1].innerText = key;
+
+                // 標記已排序的元素為綠色
+                for (let k = 0; k <= i; k++) {
+                    bars[k].style.backgroundColor = 'var(--success-color)';
+                }
+
+                await sleep(200);
+            }
+
+            // 恢復重置按鈕
+            resetBtn.disabled = false;
+        }
+
+        // 事件監聽
+        startBtn.addEventListener('click', insertionSort);
+        resetBtn.addEventListener('click', () => {
+            generateArray();
+            startBtn.disabled = false;
+        });
+
+        // 初始化
+        generateArray();
+    </script>
+</body>
+</html>

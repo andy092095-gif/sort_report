@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合併排序法 (Merge Sort) 教學面板</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --success-color: #2ecc71;
+            --highlight-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--secondary-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--secondary-color);
+            margin-bottom: 30px;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .panel {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* 模擬區塊樣式 */
+        #visualization {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            height: 300px;
+            margin: 20px 0;
+            padding: 20px 0;
+            border: 1px dashed #bdc3c7;
+            border-radius: 8px;
+            background-color: #fafafa;
+            gap: 4px;
+        }
+
+        .bar {
+            width: 30px;
+            background-color: var(--primary-color);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.2s ease, background-color 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            color: white;
+            font-size: 12px;
+            padding-bottom: 5px;
+            box-sizing: border-box;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            background-color: var(--primary-color);
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        #reset-btn {
+            background-color: #7f8c8d;
+        }
+
+        #reset-btn:hover {
+            background-color: #636e72;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div style="text-align: left; margin-bottom: 20px;">
+            <a href="index.html" style="color: var(--primary-color); text-decoration: none; font-weight: bold;">← 返回首頁</a>
+        </div>
+        <h1>合併排序法 (Merge Sort) 教學</h1>
+
+        <div class="panel">
+            <h2>📝 簡述原理</h2>
+            <p>合併排序法是一種分治法（Divide and Conquer）的排序演算法。它的核心思想是：將欲排序的數列分成兩個均等的子序列，分別對兩個子序列進行排序，然後將排序好的兩個子序列合併成一個有序的序列。</p>
+            <p>這個過程會遞迴地進行，直到子序列只剩一個元素為止（此時已排序）。然後依層向上合併，最終得到完全排序的序列。合併排序法的優點是時間複雜度穩定，且適合大規模數據排序。</p>
+        </div>
+
+        <div class="panel">
+            <h2>📊 複雜度分析</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>情境</th>
+                        <th>時間複雜度 (Time Complexity)</th>
+                        <th>空間複雜度 (Space Complexity)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>最佳情況 (Best Case)</strong></td>
+                        <td>O(n log n)</td>
+                        <td rowspan="3" style="vertical-align: middle;">O(n) - <em>需要額外空間進行合併</em></td>
+                    </tr>
+                    <tr>
+                        <td><strong>平均情況 (Average Case)</strong></td>
+                        <td>O(n log n)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>最壞情況 (Worst Case)</strong></td>
+                        <td>O(n log n) - <em>時間複雜度恆定</em></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="font-size: 0.9em; color: #7f8c8d; margin-top: 10px;">* 穩定性 (Stability)：<strong>穩定 (Stable)</strong>，在合併過程中保持相等元素的相對順序。</p>
+        </div>
+
+        <div class="panel">
+            <h2>🎮 模擬實作</h2>
+            <p>點擊「開始排序」觀察合併排序的過程。<span style="color: #e74c3c;">紅色</span>代表正在比較，<span style="color: #9b59b6;">紫色</span>代表正在分割，<span style="color: #2ecc71;">綠色</span>代表已經排序完成。</p>
+            
+            <div id="visualization"></div>
+
+            <div class="controls">
+                <button id="start-btn">開始排序</button>
+                <button id="reset-btn">產生新陣列</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const visualization = document.getElementById('visualization');
+        const startBtn = document.getElementById('start-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        
+        let array = [];
+        let originalArray = [];
+        const arraySize = 15;
+
+        // 產生隨機陣列
+        function generateArray() {
+            array = [];
+            originalArray = [];
+            visualization.innerHTML = '';
+            for (let i = 0; i < arraySize; i++) {
+                // 產生 20 到 250 之間的隨機數作為高度
+                const value = Math.floor(Math.random() * 230) + 20;
+                array.push(value);
+                originalArray.push(value);
+                
+                const bar = document.createElement('div');
+                bar.classList.add('bar');
+                bar.style.height = `${value}px`;
+                bar.innerText = value;
+                visualization.appendChild(bar);
+            }
+        }
+
+        // 延遲函數以產生動畫效果
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // 取得所有 bar 元素
+        function getBars() {
+            return document.querySelectorAll('.bar');
+        }
+
+        // 更新視覺效果
+        async function updateVisualization() {
+            const bars = getBars();
+            for (let i = 0; i < array.length; i++) {
+                bars[i].style.height = `${array[i]}px`;
+                bars[i].innerText = array[i];
+            }
+        }
+
+        // 合併排序主程式
+        async function mergeSort() {
+            const bars = getBars();
+            startBtn.disabled = true;
+            resetBtn.disabled = true;
+
+            // 複製陣列用於排序
+            let tempArray = [...originalArray];
+            
+            // 執行合併排序
+            await mergeSortHelper(tempArray, 0, tempArray.length - 1, bars);
+
+            // 所有元素標記為完成
+            bars.forEach(bar => bar.style.backgroundColor = 'var(--success-color)');
+
+            resetBtn.disabled = false;
+        }
+
+        // 合併排序遞迴函數
+        async function mergeSortHelper(arr, left, right, bars) {
+            if (left < right) {
+                const mid = Math.floor((left + right) / 2);
+                
+                // 標記正在分割的區間（紫色）
+                for (let i = left; i <= right; i++) {
+                    bars[i].style.backgroundColor = '#9b59b6';
+                }
+                await sleep(200);
+
+                // 遞迴排序左半邊
+                await mergeSortHelper(arr, left, mid, bars);
+                
+                // 遞迴排序右半邊
+                await mergeSortHelper(arr, mid + 1, right, bars);
+                
+                // 合併
+                await merge(arr, left, mid, right, bars);
+            }
+        }
+
+        // 合併函數
+        async function merge(arr, left, mid, right, bars) {
+            const leftArr = arr.slice(left, mid + 1);
+            const rightArr = arr.slice(mid + 1, right + 1);
+            
+            let i = 0, j = 0, k = left;
+
+            while (i < leftArr.length && j < rightArr.length) {
+                // 標記正在比較的元素（紅色）
+                bars[left + i].style.backgroundColor = 'var(--highlight-color)';
+                bars[mid + 1 + j].style.backgroundColor = 'var(--highlight-color)';
+                
+                await sleep(300);
+
+                if (leftArr[i] <= rightArr[j]) {
+                    arr[k] = leftArr[i];
+                    bars[k].style.height = `${arr[k]}px`;
+                    bars[k].innerText = arr[k];
+                    i++;
+                } else {
+                    arr[k] = rightArr[j];
+                    bars[k].style.height = `${arr[k]}px`;
+                    bars[k].innerText = arr[k];
+                    j++;
+                }
+                
+                // 恢復顏色
+                bars[left + i - 1] = bars[left + i - 1] || {};
+                bars[mid + j] = bars[mid + j] || {};
+                
+                bars[k].style.backgroundColor = 'var(--primary-color)';
+                k++;
+            }
+
+            // 複製剩餘元素
+            while (i < leftArr.length) {
+                arr[k] = leftArr[i];
+                bars[k].style.height = `${arr[k]}px`;
+                bars[k].innerText = arr[k];
+                i++;
+                k++;
+                await sleep(100);
+            }
+
+            while (j < rightArr.length) {
+                arr[k] = rightArr[j];
+                bars[k].style.height = `${arr[k]}px`;
+                bars[k].innerText = arr[k];
+                j++;
+                k++;
+                await sleep(100);
+            }
+
+            // 將已合併的部分標記為排序完成（綠色）
+            for (let i = left; i <= right; i++) {
+                bars[i].style.backgroundColor = 'var(--success-color)';
+            }
+        }
+
+        // 事件監聽
+        startBtn.addEventListener('click', mergeSort);
+        resetBtn.addEventListener('click', () => {
+            generateArray();
+            startBtn.disabled = false;
+        });
+
+        // 初始化
+        generateArray();
+    </script>
+</body>
+</html>

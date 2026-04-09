@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>排序演算法性能分析</title>
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #2ecc71;
+            --danger-color: #fa709a;
+            --warning-color: #f39c12;
+            --info-color: #4facfe;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #2d3748;
+            line-height: 1.6;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--secondary-color);
+            margin-bottom: 30px;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .panel {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .panel h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .control-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--secondary-color);
+        }
+
+        input[type="number"], input[type="range"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .value-display {
+            margin-top: 5px;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #7f8c8d;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .result-card h3 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .time-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+
+        .time-unit {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .status {
+            font-size: 14px;
+            margin-top: 8px;
+            padding: 8px;
+            border-radius: 5px;
+            background-color: rgba(255,255,255,0.5);
+            color: var(--secondary-color);
+        }
+
+        .status.running {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status.complete {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f0f0f0;
+        }
+
+        .chart-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            height: 300px;
+            gap: 20px;
+            padding: 20px 0;
+            border: 1px dashed #bdc3c7;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+
+        .chart-bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bar {
+            width: 60px;
+            background: linear-gradient(to top, var(--primary-color), #5dade2);
+            border-radius: 5px 5px 0 0;
+            transition: all 0.3s ease;
+        }
+
+        .bar:hover {
+            transform: scaleY(1.05);
+            box-shadow: 0 -5px 10px rgba(0,0,0,0.2);
+        }
+
+        .bar-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--secondary-color);
+            text-align: center;
+            width: 80px;
+        }
+
+        .bar-value {
+            font-size: 11px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .note {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            border-left: 4px solid var(--warning-color);
+            font-size: 14px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← 返回首頁</a>
+        <h1>🔍 排序演算法性能分析</h1>
+
+        <div class="panel">
+            <h2>⚙️ 測試參數設定</h2>
+            <div class="control-group">
+                <div class="input-group">
+                    <label for="arraySize">陣列大小 (n):</label>
+                    <input type="range" id="arraySize" min="100" max="10000" step="100" value="1000">
+                    <div class="value-display" id="arraySizeDisplay">1000 個數</div>
+                </div>
+                <div class="input-group">
+                    <label for="iterations">測試次數:</label>
+                    <input type="number" id="iterations" min="1" max="100" value="3">
+                </div>
+                <div class="input-group">
+                    <label for="dataType">資料型態:</label>
+                    <select id="dataType" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                        <option value="random">隨機資料</option>
+                        <option value="sorted">已排序</option>
+                        <option value="reverse">反向排序</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-success" id="startBtn" onclick="startAnalysis()">▶ 開始分析</button>
+                <button class="btn-success" id="multiTestBtn" onclick="startMultiTest()" style="background-color: #f39c12;">📊 5規模測試</button>
+                <button class="btn-secondary" id="resetBtn" onclick="resetResults()">↻ 重置結果</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>📊 測試結果</h2>
+            <div id="resultsContainer" class="results-grid">
+                <div class="result-card">
+                    <h3>氣泡排序</h3>
+                    <div class="time-value" id="bubbleTime">-</div>
+                    <div class="time-unit">毫秒 (ms)</div>
+                    <div class="status" id="bubbleStatus">待測試</div>
+                </div>
+                <div class="result-card">
+                    <h3>選擇排序</h3>
+                    <div class="time-value" id="selectionTime">-</div>
+                    <div class="time-unit">毫秒 (ms)</div>
+                    <div class="status" id="selectionStatus">待測試</div>
+                </div>
+                <div class="result-card">
+                    <h3>插入排序</h3>
+                    <div class="time-value" id="insertionTime">-</div>
+                    <div class="time-unit">毫秒 (ms)</div>
+                    <div class="status" id="insertionStatus">待測試</div>
+                </div>
+                <div class="result-card">
+                    <h3>合併排序</h3>
+                    <div class="time-value" id="mergeTime">-</div>
+                    <div class="time-unit">毫秒 (ms)</div>
+                    <div class="status" id="mergeStatus">待測試</div>
+                </div>
+                <div class="result-card">
+                    <h3>快速排序</h3>
+                    <div class="time-value" id="quickTime">-</div>
+                    <div class="time-unit">毫秒 (ms)</div>
+                    <div class="status" id="quickStatus">待測試</div>
+                </div>
+            </div>
+
+            <div class="note">
+                💡 <strong>提示:</strong> 測試時間為平均耗時（毫秒）。不同電腦效能、瀏覽器狀態可能影響測試結果。
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>📈 性能比較圖表</h2>
+            <div class="chart-container">
+                <div class="bar-chart" id="barChart">
+                    <div style="text-align: center; color: #7f8c8d;">請先點擊「開始分析」進行測試</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>📋 詳細數據表</h2>
+            <table id="dataTable" class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>排序演算法</th>
+                        <th>時間複雜度 (平均)</th>
+                        <th>空間複雜度</th>
+                        <th>穩定性</th>
+                        <th>測試時間 (ms)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td><strong>氣泡排序</strong></td>
+                        <td>O(n²)</td>
+                        <td>O(1)</td>
+                        <td>穩定</td>
+                        <td id="table-bubble">-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>選擇排序</strong></td>
+                        <td>O(n²)</td>
+                        <td>O(1)</td>
+                        <td>不穩定</td>
+                        <td id="table-selection">-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>插入排序</strong></td>
+                        <td>O(n²)</td>
+                        <td>O(1)</td>
+                        <td>穩定</td>
+                        <td id="table-insertion">-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>合併排序</strong></td>
+                        <td>O(n log n)</td>
+                        <td>O(n)</td>
+                        <td>穩定</td>
+                        <td id="table-merge">-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>快速排序</strong></td>
+                        <td>O(n log n)</td>
+                        <td>O(log n)</td>
+                        <td>不穩定</td>
+                        <td id="table-quick">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="panel">
+            <h2>📑 多規模數據測試表 (5個n值)</h2>
+            <table id="multiTestTable" class="comparison-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>演算法</th>
+                        <th>n=500</th>
+                        <th>n=1000</th>
+                        <th>n=2000</th>
+                        <th>n=5000</th>
+                        <th>n=10000</th>
+                        <th>平均時間</th>
+                        <th>增長倍率</th>
+                    </tr>
+                </thead>
+                <tbody id="multiTestBody">
+                    <!-- 動態生成 -->
+                </tbody>
+            </table>
+            <div id="multiTestMessage" style="text-align: center; color: #718096; padding: 30px; font-size: 16px;">
+                點擊「📊 5規模測試」按鈕進行多規模數據測試
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 存儲多規模測試結果
+        let multiTestResults = {};
+        // 排序演算法實作
+
+        // 1. 氣泡排序
+        function bubbleSort(arr) {
+            let n = arr.length;
+            for (let i = 0; i < n - 1; i++) {
+                for (let j = 0; j < n - i - 1; j++) {
+                    if (arr[j] > arr[j + 1]) {
+                        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                    }
+                }
+            }
+            return arr;
+        }
+
+        // 2. 選擇排序
+        function selectionSort(arr) {
+            let n = arr.length;
+            for (let i = 0; i < n - 1; i++) {
+                let minIdx = i;
+                for (let j = i + 1; j < n; j++) {
+                    if (arr[j] < arr[minIdx]) {
+                        minIdx = j;
+                    }
+                }
+                [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
+            }
+            return arr;
+        }
+
+        // 3. 插入排序
+        function insertionSort(arr) {
+            let n = arr.length;
+            for (let i = 1; i < n; i++) {
+                let key = arr[i];
+                let j = i - 1;
+                while (j >= 0 && arr[j] > key) {
+                    arr[j + 1] = arr[j];
+                    j--;
+                }
+                arr[j + 1] = key;
+            }
+            return arr;
+        }
+
+        // 4. 合併排序
+        function mergeSort(arr) {
+            if (arr.length <= 1) return arr;
+            
+            const mid = Math.floor(arr.length / 2);
+            const left = mergeSort(arr.slice(0, mid));
+            const right = mergeSort(arr.slice(mid));
+            
+            return merge(left, right);
+        }
+
+        function merge(left, right) {
+            let result = [];
+            let i = 0, j = 0;
+            
+            while (i < left.length && j < right.length) {
+                if (left[i] <= right[j]) {
+                    result.push(left[i++]);
+                } else {
+                    result.push(right[j++]);
+                }
+            }
+            
+            return result.concat(left.slice(i)).concat(right.slice(j));
+        }
+
+        // 5. 快速排序
+        function quickSort(arr) {
+            if (arr.length <= 1) return arr;
+            
+            const pivot = arr[Math.floor(arr.length / 2)];
+            const left = arr.filter(x => x < pivot);
+            const middle = arr.filter(x => x === pivot);
+            const right = arr.filter(x => x > pivot);
+            
+            return [...quickSort(left), ...middle, ...quickSort(right)];
+        }
+
+        // 生成測試數據
+        function generateTestData(size, type) {
+            let arr = Array.from({ length: size }, () => Math.random() * 1000);
+            
+            if (type === 'sorted') {
+                return arr.sort((a, b) => a - b);
+            } else if (type === 'reverse') {
+                return arr.sort((a, b) => b - a);
+            }
+            
+            return arr;
+        }
+
+        // 測試單個排序演算法
+        function testSort(sortFunction, arr, iterations) {
+            let totalTime = 0;
+            
+            for (let i = 0; i < iterations; i++) {
+                const testArr = [...arr]; // 複製陣列
+                const startTime = performance.now();
+                sortFunction(testArr);
+                const endTime = performance.now();
+                totalTime += (endTime - startTime);
+            }
+            
+            return totalTime / iterations;
+        }
+
+        // 開始分析
+        async function startAnalysis() {
+            const arraySize = parseInt(document.getElementById('arraySize').value);
+            const iterations = parseInt(document.getElementById('iterations').value);
+            const dataType = document.getElementById('dataType').value;
+            
+            const startBtn = document.getElementById('startBtn');
+            startBtn.disabled = true;
+            
+            // 重置所有狀態
+            document.querySelectorAll('.status').forEach(el => {
+                el.textContent = '正在測試 ⏳';
+                el.className = 'status running';
+            });
+            
+            // 生成測試數據
+            const testData = generateTestData(arraySize, dataType);
+            
+            // 執行測試
+            const results = {
+                bubble: testSort(bubbleSort, testData, iterations),
+                selection: testSort(selectionSort, testData, iterations),
+                insertion: testSort(insertionSort, testData, iterations),
+                merge: testSort(mergeSort, testData, iterations),
+                quick: testSort(quickSort, testData, iterations)
+            };
+            
+            // 顯示結果
+            displayResults(results, arraySize);
+            updateChart(results);
+            
+            // 恢復按鈕
+            startBtn.disabled = false;
+            document.querySelectorAll('.status').forEach(el => {
+                el.textContent = '✓ 測試完成';
+                el.className = 'status complete';
+            });
+        }
+
+        // 顯示結果
+        function displayResults(results, arraySize) {
+            document.getElementById('bubbleTime').textContent = results.bubble.toFixed(2);
+            document.getElementById('selectionTime').textContent = results.selection.toFixed(2);
+            document.getElementById('insertionTime').textContent = results.insertion.toFixed(2);
+            document.getElementById('mergeTime').textContent = results.merge.toFixed(2);
+            document.getElementById('quickTime').textContent = results.quick.toFixed(2);
+            
+            // 更新表格
+            document.getElementById('table-bubble').textContent = results.bubble.toFixed(2);
+            document.getElementById('table-selection').textContent = results.selection.toFixed(2);
+            document.getElementById('table-insertion').textContent = results.insertion.toFixed(2);
+            document.getElementById('table-merge').textContent = results.merge.toFixed(2);
+            document.getElementById('table-quick').textContent = results.quick.toFixed(2);
+        }
+
+        // 更新圖表
+        function updateChart(results) {
+            const maxTime = Math.max(...Object.values(results));
+            const chartHTML = `
+                <div class="chart-bar">
+                    <div class="bar-label">氣泡排序</div>
+                    <div class="bar" style="height: ${(results.bubble / maxTime) * 250}px"></div>
+                    <div class="bar-value">${results.bubble.toFixed(2)}ms</div>
+                </div>
+                <div class="chart-bar">
+                    <div class="bar-label">選擇排序</div>
+                    <div class="bar" style="height: ${(results.selection / maxTime) * 250}px"></div>
+                    <div class="bar-value">${results.selection.toFixed(2)}ms</div>
+                </div>
+                <div class="chart-bar">
+                    <div class="bar-label">插入排序</div>
+                    <div class="bar" style="height: ${(results.insertion / maxTime) * 250}px"></div>
+                    <div class="bar-value">${results.insertion.toFixed(2)}ms</div>
+                </div>
+                <div class="chart-bar">
+                    <div class="bar-label">合併排序</div>
+                    <div class="bar" style="height: ${(results.merge / maxTime) * 250}px"></div>
+                    <div class="bar-value">${results.merge.toFixed(2)}ms</div>
+                </div>
+                <div class="chart-bar">
+                    <div class="bar-label">快速排序</div>
+                    <div class="bar" style="height: ${(results.quick / maxTime) * 250}px"></div>
+                    <div class="bar-value">${results.quick.toFixed(2)}ms</div>
+                </div>
+            `;
+            
+            document.getElementById('barChart').innerHTML = chartHTML;
+        }
+
+        // 重置結果
+        function resetResults() {
+            document.querySelectorAll('.time-value').forEach(el => {
+                el.textContent = '-';
+            });
+            document.querySelectorAll('.status').forEach(el => {
+                el.textContent = '待測試';
+                el.className = 'status';
+            });
+            document.querySelectorAll('[id^="table-"]').forEach(el => {
+                el.textContent = '-';
+            });
+            document.getElementById('barChart').innerHTML = '<div style="text-align: center; color: #7f8c8d;">請先點擊「開始分析」進行測試</div>';
+            document.getElementById('multiTestTable').style.display = 'none';
+            document.getElementById('multiTestMessage').style.display = 'block';
+            multiTestResults = {};
+        }
+
+        // 多規模測試 - 測試5個不同的n值
+        async function startMultiTest() {
+            const dataSizes = [500, 1000, 2000, 5000, 10000];
+            const dataType = document.getElementById('dataType').value;
+            const iterations = parseInt(document.getElementById('iterations').value);
+            
+            const multiTestBtn = document.getElementById('multiTestBtn');
+            multiTestBtn.disabled = true;
+            multiTestBtn.textContent = '⏳ 測試中...';
+            
+            // 初始化結果容器
+            multiTestResults = {
+                bubble: [],
+                selection: [],
+                insertion: [],
+                merge: [],
+                quick: []
+            };
+            
+            // 對每個 n 值進行測試
+            for (const n of dataSizes) {
+                const testData = generateTestData(n, dataType);
+                
+                // 測試每個演算法
+                multiTestResults.bubble.push(testSort(bubbleSort, testData, iterations));
+                multiTestResults.selection.push(testSort(selectionSort, testData, iterations));
+                multiTestResults.insertion.push(testSort(insertionSort, testData, iterations));
+                multiTestResults.merge.push(testSort(mergeSort, testData, iterations));
+                multiTestResults.quick.push(testSort(quickSort, testData, iterations));
+            }
+            
+            // 顯示結果
+            displayMultiTestResults(multiTestResults, dataSizes);
+            
+            // 恢復按鈕
+            multiTestBtn.disabled = false;
+            multiTestBtn.textContent = '📊 5規模測試';
+        }
+
+        // 顯示多規模測試結果
+        function displayMultiTestResults(results, dataSizes) {
+            const tableBody = document.getElementById('multiTestBody');
+            tableBody.innerHTML = '';
+            
+            const algorithms = [
+                { name: '氣泡排序', key: 'bubble' },
+                { name: '選擇排序', key: 'selection' },
+                { name: '插入排序', key: 'insertion' },
+                { name: '合併排序', key: 'merge' },
+                { name: '快速排序', key: 'quick' }
+            ];
+            
+            // 創建每個演算法的行
+            algorithms.forEach(algo => {
+                const times = results[algo.key];
+                const avgTime = times.reduce((a, b) => a + b) / times.length;
+                const growthRate = (times[times.length - 1] / times[0]).toFixed(2);
+                
+                let row = `<tr>
+                    <td><strong>${algo.name}</strong></td>`;
+                
+                // 添加每個 n 值的結果
+                times.forEach(time => {
+                    row += `<td>${time.toFixed(3)} ms</td>`;
+                });
+                
+                row += `<td style="background-color: #f0f0f0; font-weight: bold;">${avgTime.toFixed(3)} ms</td>`;
+                row += `<td style="background-color: #e8f5e9; color: #2e7d32; font-weight: bold;">${growthRate}x</td>`;
+                row += '</tr>';
+                
+                tableBody.innerHTML += row;
+            });
+            
+            // 顯示表格，隱藏提示信息
+            document.getElementById('multiTestTable').style.display = 'table';
+            document.getElementById('multiTestMessage').style.display = 'none';
+        }
+
+        // 陣列大小滑桿事件
+        document.getElementById('arraySize').addEventListener('input', function() {
+            document.getElementById('arraySizeDisplay').textContent = this.value + ' 個數';
+        });
+    </script>
+</body>
+</html>

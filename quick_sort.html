@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快速排序法 (Quick Sort) 教學面板</title>
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #2ecc71;
+            --highlight-color: #fa709a;
+            --pivot-color: #f39c12;
+            --bg-gradient-1: #f5f7fa;
+            --bg-gradient-2: #c3cfe2;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 100%);
+            color: #2d3748;
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--secondary-color);
+            margin-bottom: 30px;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .panel {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* 模擬區塊樣式 */
+        #visualization {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            height: 300px;
+            margin: 20px 0;
+            padding: 20px 0;
+            border: 1px dashed #bdc3c7;
+            border-radius: 8px;
+            background-color: #fafafa;
+            gap: 4px;
+        }
+
+        .bar {
+            width: 30px;
+            background-color: var(--primary-color);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.2s ease, background-color 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            color: white;
+            font-size: 12px;
+            padding-bottom: 5px;
+            box-sizing: border-box;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            background-color: var(--primary-color);
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        #reset-btn {
+            background-color: #7f8c8d;
+        }
+
+        #reset-btn:hover {
+            background-color: #636e72;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div style="text-align: left; margin-bottom: 20px;">
+            <a href="index.html" style="color: var(--primary-color); text-decoration: none; font-weight: bold;">← 返回首頁</a>
+        </div>
+        <h1>快速排序法 (Quick Sort) 教學</h1>
+
+        <div class="panel">
+            <h2>📝 簡述原理</h2>
+            <p>快速排序法是一種高效的排序演算法，採用分治法的策略。它選擇一個元素作為「樞紐」(pivot)，然後將陣列分成兩部分：一部分是所有小於樞紐的元素，另一部分是所有大於或等於樞紐的元素。</p>
+            <p>隨後遞迴地對這兩個部分進行相同的排序過程，直到整個陣列排序完成。由於採用分治法，快速排序在平均情況下效率非常高。</p>
+        </div>
+
+        <div class="panel">
+            <h2>📊 複雜度分析</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>情境</th>
+                        <th>時間複雜度 (Time Complexity)</th>
+                        <th>空間複雜度 (Space Complexity)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>最佳情況 (Best Case)</strong></td>
+                        <td>O(n log n) - <em>樞紐元素正好將陣列平分</em></td>
+                        <td>O(log n) - <em>遞迴調用棧深度</em></td>
+                    </tr>
+                    <tr>
+                        <td><strong>平均情況 (Average Case)</strong></td>
+                        <td>O(n log n)</td>
+                        <td rowspan="2" style="vertical-align: middle;">O(log n) - <em>遞迴調用棧深度</em></td>
+                    </tr>
+                    <tr>
+                        <td><strong>最壞情況 (Worst Case)</strong></td>
+                        <td>O(n²) - <em>樞紐每次都選到最小或最大元素</em></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="font-size: 0.9em; color: #7f8c8d; margin-top: 10px;">* 穩定性 (Stability)：<strong>不穩定 (Unstable)</strong>，因為分割過程中相同值的元素相對位置可能改變。</p>
+        </div>
+
+        <div class="panel">
+            <h2>🎮 模擬實作</h2>
+            <p>點擊「開始排序」觀察快速排序的過程。<span style="color: #f39c12;">橙色</span>代表樞紐元素，<span style="color: #e74c3c;">紅色</span>代表正在比較，<span style="color: #2ecc71;">綠色</span>代表已經排序完成。</p>
+            
+            <div id="visualization"></div>
+
+            <div class="controls">
+                <button id="start-btn">開始排序</button>
+                <button id="reset-btn">產生新陣列</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const visualization = document.getElementById('visualization');
+        const startBtn = document.getElementById('start-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        
+        let array = [];
+        const arraySize = 15;
+        let sortedIndices = new Set();
+
+        // 產生隨機陣列
+        function generateArray() {
+            array = [];
+            sortedIndices.clear();
+            visualization.innerHTML = '';
+            for (let i = 0; i < arraySize; i++) {
+                // 產生 20 到 250 之間的隨機數作為高度
+                const value = Math.floor(Math.random() * 230) + 20;
+                array.push(value);
+                
+                const bar = document.createElement('div');
+                bar.classList.add('bar');
+                bar.style.height = `${value}px`;
+                bar.innerText = value;
+                visualization.appendChild(bar);
+            }
+        }
+
+        // 延遲函數以產生動畫效果
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // 獲取所有 bar 元素
+        function getBars() {
+            return document.querySelectorAll('.bar');
+        }
+
+        // 快速排序主程式
+        async function quickSort() {
+            const bars = getBars();
+            startBtn.disabled = true;
+            resetBtn.disabled = true;
+
+            await quickSortHelper(0, array.length - 1, bars);
+
+            // 最後全部標記為完成
+            bars.forEach(bar => {
+                bar.style.backgroundColor = 'var(--success-color)';
+            });
+        }
+
+        // 快速排序遞迴函數
+        async function quickSortHelper(low, high, bars) {
+            if (low < high) {
+                // 分割並取得分割點
+                const pi = await partition(low, high, bars);
+                
+                // 遞迴排序左側部分
+                await quickSortHelper(low, pi - 1, bars);
+                
+                // 遞迴排序右側部分
+                await quickSortHelper(pi + 1, high, bars);
+            } else if (low === high) {
+                // 單一元素已排序
+                bars[low].style.backgroundColor = 'var(--success-color)';
+                sortedIndices.add(low);
+            }
+        }
+
+        // 分割函數
+        async function partition(low, high, bars) {
+            // 選擇最後一個元素作為樞紐
+            const pivot = array[high];
+            bars[high].style.backgroundColor = 'var(--pivot-color)';
+            
+            let i = low - 1;
+
+            for (let j = low; j < high; j++) {
+                // 標記正在比較的元素
+                bars[j].style.backgroundColor = 'var(--highlight-color)';
+                await sleep(200);
+
+                if (array[j] < pivot) {
+                    i++;
+                    // 交換陣列值
+                    let temp = array[i];
+                    array[i] = array[j];
+                    array[j] = temp;
+
+                    // 交換 DOM 高度與文字
+                    bars[i].style.height = `${array[i]}px`;
+                    bars[i].innerText = array[i];
+                    bars[j].style.height = `${array[j]}px`;
+                    bars[j].innerText = array[j];
+                }
+
+                // 恢復顏色（如果還沒排序完成）
+                if (!sortedIndices.has(j)) {
+                    bars[j].style.backgroundColor = 'var(--primary-color)';
+                }
+            }
+
+            // 將樞紐放到正確位置
+            let temp = array[i + 1];
+            array[i + 1] = array[high];
+            array[high] = temp;
+
+            bars[i + 1].style.height = `${array[i + 1]}px`;
+            bars[i + 1].innerText = array[i + 1];
+            bars[high].style.height = `${array[high]}px`;
+            bars[high].innerText = array[high];
+
+            // 標記樞紐位置為完成
+            bars[i + 1].style.backgroundColor = 'var(--success-color)';
+            sortedIndices.add(i + 1);
+
+            return i + 1;
+        }
+
+        // 事件監聽
+        startBtn.addEventListener('click', quickSort);
+        resetBtn.addEventListener('click', () => {
+            generateArray();
+            startBtn.disabled = false;
+        });
+
+        // 初始化
+        generateArray();
+    </script>
+</body>
+</html>
